@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  description: An API to shorten URLs, resolve shortened URLs, and manage expiration times.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost/api'
+    description: Local Development Server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      email:
+                        type: string
+                  token:
+                    type: string
+        '400':
+          description: Invalid input
+
+  /auth/login:
+    post:
+      summary: Login a user and get JWT token
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: JWT token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh JWT token
+      operationId: refreshToken
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Failed to refresh token
+
+  /auth/get-user:
+    get:
+      summary: Get the authenticated user's details
+      operationId: getUserDetails
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User details retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      email:
+                        type: string
+        '401':
+          description: Unauthorized
+
+  /auth/logout:
+    post:
+      summary: Logout the authenticated user
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+
+  /shorten:
+    post:
+      summary: Shorten a URL
+      operationId: shortenUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                original_url:
+                  type: string
+                  format: uri
+      responses:
+        '201':
+          description: URL shortened successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  short_url:
+                    type: string
+        '200':
+          description: URL shortened exists and expiry time extended
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  short_url:
+                    type: string
+                  is_old:
+                    type: boolean
+        '400':
+          description: Invalid URL
+
+  /resolve:
+    post:
+      summary: Resolve a shortened URL to the original URL
+      operationId: resolveUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short_url:
+                  type: string
+                  format: uri
+      responses:
+        '201':
+          description: URL resolved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  original_url:
+                    type: string
+                    format: uri
+        '404':
+          description: URL not found
+        '410':
+          description: URL has expired
+
+  /update-expiry-time:
+    put:
+      summary: Update the expiry time of a shortened URL
+      operationId: updateExpiryTime
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short_url:
+                  type: string
+                expiry_time:
+                  type: integer
+                  description: Expiry time in minutes (must be greater than 1)
+                  minimum: 1
+      responses:
+        '200':
+          description: Expiry time updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: URL not found
+        '400':
+          description: Invalid expiry time
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
