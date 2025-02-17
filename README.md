@@ -29,3 +29,10 @@ The URL shortening system is a web application designed and implemented in PHP f
 - **Test Coverage**: The system includes at least **80% test coverage**.
 - **BONUS**: Optionally, a frontend application can be built using **Vue.js** or **React.js**.
 - **Optional**: Dockerize the entire application using **Docker** and **Docker Compose**.
+
+
+To start the scheduler, use the following command:
+
+```bash
+docker compose up -d --build
+```
