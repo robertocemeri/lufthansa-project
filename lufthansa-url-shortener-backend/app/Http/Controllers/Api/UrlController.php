@@ -79,4 +79,11 @@ class UrlController extends Controller
 
         return response()->json(['message' => 'Expiration time updated'], 200);
     }
+
+    public function list()
+    {
+        $urls = Url::all();
+
+        return response()->json(['urls' => $urls], 200);
+    }
 }

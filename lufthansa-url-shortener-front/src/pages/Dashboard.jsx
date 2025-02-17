@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
+  const [urls, setUrls] = useState([]);
   const [longUrl, setLongUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [shortInput, setShortInput] = useState("");
@@ -63,6 +64,19 @@ const Dashboard = () => {
     }
   };
 
+  const getAllUrls = async () => {
+    try {
+      const response = await axiosInstance.get("/urls");
+      setUrls(response.data.urls);
+    } catch (err) {
+      console.error("Error fetching URLs:", err);
+    }
+  };
+
+  useEffect(() => {
+    getAllUrls();
+  }, []);
+
   const handleTabChange = (tab) => {
     setError("");
     setSuccess("");
@@ -112,6 +126,17 @@ const Dashboard = () => {
             onClick={() => handleTabChange("retrieve")}
           >
             Retrieve URL
+          </button>
+
+          <button
+            className={`px-4 py-2 rounded-t-md ${
+              activeTab === "analytics"
+                ? "bg-purple-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            }`}
+            onClick={() => handleTabChange("analytics")}
+          >
+            Analytics
           </button>
         </div>
 
@@ -189,6 +214,48 @@ const Dashboard = () => {
                     {originalUrl}
                   </a>
                 </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "analytics" && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              URL Analytics
+            </h2>
+            <div className="mb-8">
+              {urls.length > 0 ? (
+                <ul className="space-y-4">
+                  {urls.map((url) => (
+                    <li
+                      key={url.id}
+                      className="p-4 border border-gray-300 rounded-md"
+                    >
+                      <p className="text-lg text-gray-800">
+                        Short URL:{" "}
+                        <a
+                          href={url.short_url}
+                          target="_blank"
+                          className="underline"
+                        >
+                          {url.short_url}
+                        </a>
+                      </p>
+                      <p className="text-md text-gray-600">
+                        Original URL: {url.original_url}
+                      </p>
+                      <p className="text-md text-gray-600">
+                        Clicks: {url.access_count}
+                      </p>
+                      <p className="text-md text-gray-600">
+                        Expire At: {new Date(url.expiry_time).toLocaleString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-600">No URLs found.</p>
               )}
             </div>
           </div>

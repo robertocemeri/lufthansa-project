@@ -18,8 +18,7 @@ services:
       php artisan key:generate &&
       sleep 15 &&
       php artisan migrate &&
-      php artisan serve --host=0.0.0.0 &&
-      php artisan schedule:work
+      php artisan serve --host=0.0.0.0
       "
     environment:
       - APP_ENV=local

@@ -19,3 +19,4 @@ Route::prefix('auth')->group(function () {
 Route::post('shorten', [UrlController::class, 'shorten'])->name('url.shorten');
 Route::post('resolve', [UrlController::class, 'resolve'])->name('url.resolve');
 Route::put('update-expiry-time', [UrlController::class, 'updateExpiryTime'])->name('url.update-expiry-time');
+Route::get('urls', [UrlController::class, 'list'])->name('url.list');
