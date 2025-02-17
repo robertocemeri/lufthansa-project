@@ -63,6 +63,17 @@ const Dashboard = () => {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setError("");
+    setSuccess("");
+    setShortUrl("");
+    setOriginalUrl("");
+    setShortInput("");
+    setLongUrl("");
+    setIsOld(false);
+    setActiveTab(tab);
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start pt-8 px-4">
       <div className="w-full max-w-3xl text-center mb-8">
@@ -88,7 +99,7 @@ const Dashboard = () => {
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-800"
             }`}
-            onClick={() => setActiveTab("shorten")}
+            onClick={() => handleTabChange("shorten")}
           >
             Shorten URL
           </button>
@@ -98,7 +109,7 @@ const Dashboard = () => {
                 ? "bg-green-500 text-white"
                 : "bg-gray-200 text-gray-800"
             }`}
-            onClick={() => setActiveTab("retrieve")}
+            onClick={() => handleTabChange("retrieve")}
           >
             Retrieve URL
           </button>
