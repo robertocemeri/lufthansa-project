@@ -29,6 +29,8 @@ const Dashboard = () => {
       });
       setShortUrl(response.data.short_url);
       setIsOld(response.data.is_old || false);
+
+      getAllUrls();
     } catch (err) {
       setError("Failed to shorten URL. Try again!");
     }
@@ -57,6 +59,7 @@ const Dashboard = () => {
       });
 
       if (response.status === 200) {
+        getAllUrls();
         setSuccess("Expiry time updated successfully.");
       }
     } catch (err) {
